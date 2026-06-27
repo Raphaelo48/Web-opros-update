@@ -2,7 +2,7 @@
 //  ХРАНИЛИЩЕ ДАННЫХ (API → PostgreSQL)
 // ============================================================
 
-const API_URL = "https://web-opros-production.up.railway.app/api"
+const API_URL = "https://web-opros-update-production.up.railway.app/api"
 
 const Storage = {
     // ============================================================
