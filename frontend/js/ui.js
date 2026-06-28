@@ -19,8 +19,15 @@ const UI = {
         const badge = document.getElementById('total-passed-badge');
         if (badge) {
             try {
-                const results = await Storage.getResults();
-                badge.textContent = results.length;
+                // Только админ видит общее количество
+                if (Auth.isAdmin()) {
+                    const results = await Storage.getResults();
+                    badge.textContent = results.length;
+                } else {
+                    // Обычным пользователям показываем только их количество
+                    const myResults = await Storage.getMyResults();
+                    badge.textContent = myResults.length;
+                }
             } catch (e) {
                 badge.textContent = '0';
             }
@@ -50,14 +57,32 @@ const UI = {
     },
 
     showStats: async function() {
-        // Проверка прав: только админ может смотреть статистику
+        // ⭐ Проверка прав: только админ может смотреть статистику
         if (!Auth.isAdmin()) {
-            alert('Доступ запрещён. Только для администратора.');
+            alert('⛔ Доступ запрещён. Только для администратора.');
             return;
         }
         this.showScreen('stats-screen');
         if (window.Statistics) {
             await window.Statistics.renderStats();
+        }
+    },
+
+    // ⭐ Показать/скрыть кнопки в зависимости от роли
+    updateUIForRole: function() {
+        const user = Auth.getCurrentUser();
+        const isAdmin = user && user.role === 'admin';
+        
+        // Кнопка статистики (только для админа)
+        const statsBtn = document.getElementById('admin-only-stats');
+        if (statsBtn) {
+            statsBtn.style.display = isAdmin ? 'block' : 'none';
+        }
+
+        // Бейдж с общим количеством (только для админа)
+        const badge = document.getElementById('total-passed-badge');
+        if (badge) {
+            badge.style.display = isAdmin ? 'inline' : 'none';
         }
     }
 };
