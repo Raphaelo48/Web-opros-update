@@ -500,4 +500,21 @@ const Statistics = {
                         <span class="ri-date">📅 ${dateStr}${userBadge}</span>
                         <span class="ri-cats">⏰${r.regime || 0} · 🍔${r.fastfood || 0} · 🧠${r.concentration || 0}</span>
                     </div>
-                    <
+                    <span class="ri-score" style="color: ${color}; background: ${bg};">${r.total_score || 0}/40</span>
+                </div>
+            `;
+        }).join('');
+    }
+};
+
+window.Statistics = Statistics;
+
+window.showMyResults = async function() {
+    UI.showScreen('myresults-screen');
+    await Statistics.renderMyResults();
+};
+
+window.showStats = async function() {
+    UI.showScreen('stats-screen');
+    await Statistics.renderStats();
+};
