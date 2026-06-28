@@ -157,8 +157,157 @@ const Statistics = {
             </div>
         `;
 
-        // ... графики (оставляем без изменений)
-        // (код графиков здесь, он слишком большой, но он не меняется)
+        // === ГРАФИК 1: Прогресс ===
+        const labels = sorted.map((r, i) => `#${i + 1}`);
+        const data = sorted.map(r => r.total_score || 0);
+        const ctx1 = document.getElementById('my-chart-progress').getContext('2d');
+        const gradient1 = ctx1.createLinearGradient(0, 0, 0, 260);
+        gradient1.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
+        gradient1.addColorStop(1, 'rgba(245, 158, 11, 0)');
+
+        chartInstances.push(new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Ваш балл',
+                        data: data,
+                        borderColor: '#f59e0b',
+                        backgroundColor: gradient1,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: 'Среднее по всем',
+                        data: new Array(sorted.length).fill(stats.avg || 0),
+                        borderColor: '#94a3b8',
+                        borderDash: [6, 4],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+                scales: {
+                    y: { beginAtZero: true, max: 40, ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } },
+                    x: { ticks: { color: '#64748b' }, grid: { display: false } }
+                }
+            }
+        }));
+
+        // === ГРАФИК 2: Радар ===
+        const ctx2 = document.getElementById('my-chart-radar').getContext('2d');
+        chartInstances.push(new Chart(ctx2, {
+            type: 'radar',
+            data: {
+                labels: ['⏰ Режим', '🍔 Фастфуд', '🧠 Концентрация'],
+                datasets: [
+                    {
+                        label: 'Вы',
+                        data: [
+                            (myAvgRegime / 16) * 100,
+                            (myAvgFastfood / 12) * 100,
+                            (myAvgConcentration / 12) * 100
+                        ],
+                        backgroundColor: 'rgba(245, 158, 11, 0.25)',
+                        borderColor: '#f59e0b',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#f59e0b',
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Среднее',
+                        data: [
+                            (catAvg.regime || 0) / 16 * 100,
+                            (catAvg.fastfood || 0) / 12 * 100,
+                            (catAvg.concentration || 0) / 12 * 100
+                        ],
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        borderColor: '#6366f1',
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        pointBackgroundColor: '#6366f1',
+                        pointRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { display: false, stepSize: 25 },
+                        grid: { color: '#e2e8f0' },
+                        pointLabels: { font: { size: 12, weight: '600' }, color: '#1e293b' }
+                    }
+                }
+            }
+        }));
+
+        // === ГРАФИК 3: Круговая ===
+        const myVerdicts = {
+            excellent: myResults.filter(r => r.verdict === 'excellent').length,
+            good: myResults.filter(r => r.verdict === 'good').length,
+            average: myResults.filter(r => r.verdict === 'average').length,
+            poor: myResults.filter(r => r.verdict === 'poor').length
+        };
+
+        const ctx3 = document.getElementById('my-chart-pie').getContext('2d');
+        chartInstances.push(new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['🌟 Отлично', '👍 Хорошо', '⚠️ Средне', '🚨 Плохо'],
+                datasets: [{
+                    data: [myVerdicts.excellent, myVerdicts.good, myVerdicts.average, myVerdicts.poor],
+                    backgroundColor: ['#10b981', '#6366f1', '#f59e0b', '#ef4444'],
+                    borderColor: '#fff',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } } },
+                cutout: '60%'
+            }
+        }));
+
+        // === СПИСОК ПРОХОЖДЕНИЙ ===
+        const list = document.getElementById('my-recent-list');
+        const reversedSorted = [...myResults].sort((a, b) => new Date(b.date) - new Date(a.date));
+        list.innerHTML = reversedSorted.map((r, idx) => {
+            const d = new Date(r.date);
+            const dateStr = d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            const ratio = (r.total_score || 0) / 40;
+            let color, bg;
+            if (ratio >= 0.8) { color = '#059669'; bg = '#d1fae5'; }
+            else if (ratio >= 0.6) { color = '#4f46e5'; bg = '#e0e7ff'; }
+            else if (ratio >= 0.4) { color = '#d97706'; bg = '#fef3c7'; }
+            else { color = '#dc2626'; bg = '#fee2e2'; }
+            return `
+                <div class="recent-item">
+                    <div class="ri-left">
+                        <span class="ri-date">📅 ${dateStr}</span>
+                        <span class="ri-cats">⏰${r.regime || 0} · 🍔${r.fastfood || 0} · 🧠${r.concentration || 0}</span>
+                    </div>
+                    <span class="ri-score" style="color: ${color}; background: ${bg};">Попытка #${reversedSorted.length - idx} · ${r.total_score || 0}/40</span>
+                </div>
+            `;
+        }).join('');
     },
 
     // ============================================================
@@ -223,8 +372,131 @@ const Statistics = {
             </div>
         `;
 
+        // === ГРАФИК 1: Timeline ===
+        const ctx1 = document.getElementById('chart-timeline').getContext('2d');
+        const gradient1 = ctx1.createLinearGradient(0, 0, 0, 260);
+        gradient1.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+        gradient1.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
-        // (код графиков здесь)
+        chartInstances.push(new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: daily.map(d => d.date || ''),
+                datasets: [{
+                    label: 'Прохождений',
+                    data: daily.map(d => d.count || 0),
+                    borderColor: '#6366f1',
+                    backgroundColor: gradient1,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#6366f1',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, color: '#64748b' }, grid: { color: '#e2e8f0' } },
+                    x: { ticks: { color: '#64748b', maxRotation: 45 }, grid: { display: false } }
+                }
+            }
+        }));
+
+        // === ГРАФИК 2: Категории ===
+        const ctx2 = document.getElementById('chart-categories').getContext('2d');
+        chartInstances.push(new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['⏰ Режим', '🍔 Фастфуд', '🧠 Концентрация'],
+                datasets: [{
+                    label: 'Средний балл',
+                    data: [catAvg.regime || 0, catAvg.fastfood || 0, catAvg.concentration || 0],
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(16, 185, 129, 0.8)'
+                    ],
+                    borderColor: ['#6366f1', '#f59e0b', '#10b981'],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }, {
+                    label: 'Максимум',
+                    data: [16, 12, 12],
+                    backgroundColor: 'rgba(226, 232, 240, 0.5)',
+                    borderColor: '#cbd5e1',
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } },
+                    x: { ticks: { color: '#64748b' }, grid: { display: false } }
+                }
+            }
+        }));
+
+        // === ГРАФИК 3: Вердикты ===
+        const ctx3 = document.getElementById('chart-verdicts').getContext('2d');
+        chartInstances.push(new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['🌟 Отлично', '👍 Хорошо', '⚠️ Средне', '🚨 Плохо'],
+                datasets: [{
+                    data: [verdicts.excellent || 0, verdicts.good || 0, verdicts.average || 0, verdicts.poor || 0],
+                    backgroundColor: ['#10b981', '#6366f1', '#f59e0b', '#ef4444'],
+                    borderColor: '#fff',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } } },
+                cutout: '60%'
+            }
+        }));
+
+        // === СПИСОК ВСЕХ ПРОХОЖДЕНИЙ ===
+        const list = document.getElementById('recent-list');
+        const sorted = [...results].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const currentUser = Session.getUser();
+
+        list.innerHTML = sorted.map(r => {
+            const d = new Date(r.date);
+            const dateStr = d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }) + ', ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            const ratio = (r.total_score || 0) / 40;
+            
+            let color, bg;
+            if (ratio >= 0.8) { color = '#059669'; bg = '#d1fae5'; }
+            else if (ratio >= 0.6) { color = '#4f46e5'; bg = '#e0e7ff'; }
+            else if (ratio >= 0.4) { color = '#d97706'; bg = '#fef3c7'; }
+            else { color = '#dc2626'; bg = '#fee2e2'; }
+
+            const isCurrentUser = currentUser && r.user_id === currentUser.id;
+            const userBadge = isCurrentUser
+                ? '<span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;">ВЫ</span>'
+                : '<span style="background:#e2e8f0;color:#64748b;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;">Пользователь</span>';
+
+            return `
+                <div class="recent-item">
+                    <div class="ri-left">
+                        <span class="ri-date">📅 ${dateStr}${userBadge}</span>
+                        <span class="ri-cats">⏰${r.regime || 0} · 🍔${r.fastfood || 0} · 🧠${r.concentration || 0}</span>
+                    </div>
+                    <span class="ri-score" style="color: ${color}; background: ${bg};">${r.total_score || 0}/40</span>
+                </div>
+            `;
+        }).join('');
     }
 };
 
