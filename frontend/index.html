@@ -445,10 +445,14 @@
                 </div>
             </div>
 
+            <!-- ⭐ КНОПКИ С УЧЁТОМ РОЛИ -->
             <div class="btn-group">
                 <button class="btn" onclick="startQuiz()">Начать опрос →</button>
                 <button class="btn btn-accent" onclick="showMyResults()">👤 Мои результаты</button>
-                <button class="btn btn-secondary" onclick="showStats()">📊 Общая статистика</button>
+                <!-- ⭐ Кнопка статистики ТОЛЬКО для админа -->
+                <div id="admin-only-stats" style="display: none; width: 100%;">
+                    <button class="btn btn-secondary" onclick="showStats()" style="width: 100%;">📊 Общая статистика</button>
+                </div>
             </div>
         </div>
     </div>
@@ -498,7 +502,10 @@
         <div class="btn-group">
             <button class="btn" onclick="restartQuiz()">Пройти заново</button>
             <button class="btn btn-accent" onclick="showMyResults()">👤 Мои результаты</button>
-            <button class="btn btn-secondary" onclick="showStats()">📊 Статистика</button>
+            <!-- ⭐ Кнопка статистики ТОЛЬКО для админа -->
+            <div id="admin-only-stats-results" style="display: none; width: 100%;">
+                <button class="btn btn-secondary" onclick="showStats()" style="width: 100%;">📊 Статистика</button>
+            </div>
         </div>
     </div>
 
