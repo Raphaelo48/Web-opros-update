@@ -95,11 +95,6 @@
             box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
         }
         .btn-accent:hover { box-shadow: 0 12px 28px rgba(245, 158, 11, 0.4); }
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-        }
-        .btn-danger:hover { box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4); }
         .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
         .stats-badge {
@@ -425,9 +420,12 @@
                 <button class="btn btn-secondary" onclick="logout()" style="padding: 4px 12px; font-size: 12px; margin-left: auto;">Выйти</button>
             </div>
 
-            <div class="stats-badge">
-                <span class="dot"></span>
-                <span>Опрос прошли: <strong id="total-passed-badge">0</strong> человек</span>
+            <!-- ⭐ Бейдж ТОЛЬКО ДЛЯ АДМИНА -->
+            <div id="admin-only-stats" style="display: none;">
+                <div class="stats-badge">
+                    <span class="dot"></span>
+                    <span>Опрос прошли: <strong id="total-passed-badge">0</strong> человек</span>
+                </div>
             </div>
 
             <div class="criteria">
@@ -445,12 +443,11 @@
                 </div>
             </div>
 
-            <!-- ⭐ КНОПКИ С УЧЁТОМ РОЛИ -->
             <div class="btn-group">
                 <button class="btn" onclick="startQuiz()">Начать опрос →</button>
                 <button class="btn btn-accent" onclick="showMyResults()">👤 Мои результаты</button>
                 <!-- ⭐ Кнопка статистики ТОЛЬКО для админа -->
-                <div id="admin-only-stats" style="display: none; width: 100%;">
+                <div id="admin-only-stats-btn" style="display: none; width: 100%;">
                     <button class="btn btn-secondary" onclick="showStats()" style="width: 100%;">📊 Общая статистика</button>
                 </div>
             </div>
@@ -503,7 +500,7 @@
             <button class="btn" onclick="restartQuiz()">Пройти заново</button>
             <button class="btn btn-accent" onclick="showMyResults()">👤 Мои результаты</button>
             <!-- ⭐ Кнопка статистики ТОЛЬКО для админа -->
-            <div id="admin-only-stats-results" style="display: none; width: 100%;">
+            <div id="admin-only-stats-btn-results" style="display: none; width: 100%;">
                 <button class="btn btn-secondary" onclick="showStats()" style="width: 100%;">📊 Статистика</button>
             </div>
         </div>
