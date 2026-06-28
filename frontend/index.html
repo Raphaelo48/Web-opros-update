@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Питание и успеваемость — Опросник</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/index.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image: 
+      radial-gradient(at 20% 10%, rgba(99, 102, 241, 0.12) 0, transparent 50%),
+      radial-gradient(at 80% 90%, rgba(245, 158, 11, 0.12) 0, transparent 50%);
+  }
+  .container {
+    width: 100%;
+    max-width: 780px;
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+    position: relative;
+  }
+  .screen { display: none; padding: 48px 40px; animation: fadeIn 0.5s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero { text-align: center; padding: 56px 40px; }
+  .hero-icon {
+    width: 88px; height: 88px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.35);
+  }
+  h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 16px; margin-bottom: 32px; line-height: 1.6; }
+  .criteria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+  .criteria-card {
+    padding: 18px 12px;
+    background: #f1f5f9;
+    border-radius: 14px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .criteria-card:hover { transform: translateY(-3px); }
+  .criteria-card .emoji { font-size: 28px; margin-bottom: 8px; display: block; }
+  .criteria-card .label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4); }
+  .btn:active { transform: translateY(0); }
+  .btn-secondary { background: #f1f5f9; color: var(--text); box-shadow: none; }
+  .btn-secondary:hover { background: #e2e8f0; box-shadow: none; }
+  .btn-accent {
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  }
+  .btn-accent:hover { box-shadow: 0 12px 28px rgba(245, 158, 11, 0.4); }
+  .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .stats-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    color: var(--primary-dark);
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .stats-badge .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2); }
+    50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.05); }
+  }
+
+  .progress-wrap { padding: 24px 40px 0; }
+  .progress-info {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 10px; font-weight: 500;
+  }
+  .progress-bar { height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 10px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .question-category {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #eef2ff;
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .question-text { font-size: 20px; font-weight: 600; margin-bottom: 28px; line-height: 1.4; }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option {
+    padding: 18px 22px;
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 15px; font-weight: 500;
+    display: flex; align-items: center; gap: 14px;
+    text-align: left;
+    font-family: inherit;
+    color: var(--text);
+    width: 100%;
+  }
+  .option:hover { border-color: var(--primary); background: #eef2ff; transform: translateX(4px); }
+  .option.selected { border-color: var(--primary); background: #eef2ff; }
+  .option-marker {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: white; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .option.selected .option-marker { background: var(--primary); color: white; border-color: var(--primary); }
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 32px; gap: 12px; }
+
+  .results-header { text-align: center; margin-bottom: 32px; }
+  .score-circle {
+    width: 140px; height: 140px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: white; font-weight: 700;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  }
+  .score-value { font-size: 42px; line-height: 1; }
+  .score-label { font-size: 12px; opacity: 0.9; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .verdict { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .verdict-desc { color: var(--muted); font-size: 14px; }
+  .category-results { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
+  .category-result {
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+    border-left: 4px solid var(--primary);
+  }
+  .category-result-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .category-title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+  .category-score {
+    font-size: 13px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; background: white;
+  }
+  .category-bar { height: 8px; background: white; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+  .category-bar-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
+  .category-tip { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .recommendations {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 20px; border-radius: 16px; margin-bottom: 24px;
+  }
+  .recommendations h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .recommendations ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .recommendations li { font-size: 14px; padding-left: 22px; position: relative; line-height: 1.5; }
+  .recommendations li::before { content: "✓"; position: absolute; left: 0; color: var(--success); font-weight: 700; }
+
+  .stats-header { text-align: center; margin-bottom: 32px; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    padding: 20px 14px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-card .stat-icon { font-size: 24px; margin-bottom: 8px; }
+  .stat-card .stat-value {
+    font-size: 26px; font-weight: 700; color: var(--primary-dark);
+    line-height: 1; margin-bottom: 4px;
+  }
+  .stat-card .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .chart-container {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .chart-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-wrap { position: relative; height: 260px; }
+  .chart-wrap-small { position: relative; height: 220px; }
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-state p { font-size: 14px; line-height: 1.5; }
+
+  .recent-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+  .recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    gap: 12px;
+  }
+  .recent-item .ri-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1; }
+  .recent-item .ri-score {
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .recent-item .ri-date { color: var(--muted); font-size: 12px; }
+  .recent-item .ri-cats { font-size: 12px; color: var(--muted); }
+
+  .clear-btn {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid #fecaca;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover { background: #fef2f2; }
+
+  .my-header { text-align: center; margin-bottom: 32px; }
+  .my-avatar {
+    width: 90px; height: 90px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.35);
+  }
+  .comparison-card {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #c7d2fe;
+  }
+  .comparison-card h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .comparison-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #c7d2fe;
+    font-size: 14px;
+  }
+  .comparison-row:last-child { border-bottom: none; }
+  .comparison-row .label { font-weight: 500; }
+  .comparison-row .values { display: flex; gap: 14px; align-items: center; }
+  .comparison-row .mine { font-weight: 700; color: var(--primary-dark); }
+  .comparison-row .avg { color: var(--muted); font-size: 13px; }
+  .comparison-row .diff {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .diff.positive { background: #d1fae5; color: #059669; }
+  .diff.negative { background: #fee2e2; color: #dc2626; }
+  .diff.neutral { background: #e2e8f0; color: #64748b; }
+
+  .progress-summary {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #fcd34d;
+  }
+  .progress-summary h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .progress-summary p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #78350f;
+  }
+
+  @media (max-width: 700px) {
+    .screen { padding: 32px 20px; }
+    .hero { padding: 40px 20px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-row { grid-template-columns: 1fr; }
+    h1 { font-size: 26px; }
+    .question-text { font-size: 18px; }
+    .criteria { grid-template-columns: 1fr; }
+    .recent-item { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Start Screen -->
+  <div class="screen active" id="start-screen">
+    <div class="hero">
+      <div class="hero-icon">🍎</div>
+      <h1>Питание и успеваемость</h1>
+      <p class="subtitle">Узнайте, как ваш рацион влияет на концентрацию, энергию и результаты в учёбе. Пройдите короткий опрос из 10 вопросов.</p>
+      
+      <div class="stats-badge">
+        <span class="dot"></span>
+        <span>Опрос прошли: <strong id="total-passed-badge">0</strong> человек</span>
+      </div>
+
+      <div class="criteria">
+        <div class="criteria-card">
+          <span class="emoji">⏰</span>
+          <span class="label">Режим</span>
+        </div>
+        <div class="criteria-card">
+          <span class="emoji">🍔</span>
+          <span class="label">Фастфуд</span>
+        </div>
+        <div class="criteria-card">
+          <span class="emoji">🧠</span>
+          <span class="label">Концентрация</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn" onclick="startQuiz()">Начать опрос →</button>
+        <button class="btn btn-accent" onclick="showMyResults()">👤 Мои результаты</button>
+        <button class="btn btn-secondary" onclick="showStats()">📊 Общая статистика</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div class="screen" id="quiz-screen">
+    <div class="progress-wrap" style="padding: 0 0 24px;">
+      <div class="progress-info">
+        <span id="progress-text">Вопрос 1 из 10</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="question-container">
+      <span class="question-category" id="q-category">Режим</span>
+      <h2 class="question-text" id="q-text"></h2>
+      <div class="options" id="q-options"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()">← Назад</button>
+      <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Далее →</button>
+    </div>
+  </div>
+
+  <!-- Results Screen -->
+  <div class="screen" id="results-screen">
+    <div class="results-header">
+      <div class="score-circle" id="score-circle">
+        <div class="score-value" id="score-value">0</div>
+        <div class="score-label">из 40</div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <div class="verdict-desc" id="verdict-desc"></div>
+    </div>
+
+    <div class="category-results" id="category-results"></div>
+
+    <div class="recommendations">
+      <h3>💡 Рекомендации для вас</h3>
+      <ul id="recommendations-list"></ul>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn" onclick="restartQuiz()">Пройти заново</button>
+      <button class="btn btn-accent" onclick="showMyResults()">👤 Мои результаты</button>
+      <button class="btn btn-secondary" onclick="showStats()">📊 Статистика</button>
+    </div>
+  </div>
+
+  <!-- My Results Screen -->
+  <div class="screen" id="myresults-screen">
+    <div class="my-header">
+      <div class="my-avatar">👤</div>
+      <h1>Мои результаты</h1>
+      <p class="subtitle">Ваша личная история и прогресс</p>
+    </div>
+
+    <div id="myresults-content"></div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="btn" onclick="backToStart()">← На главную</button>
+      <button class="btn btn-secondary" onclick="startQuiz()">Пройти ещё раз</button>
+    </div>
+  </div>
+
+  <!-- Stats Screen -->
+  <div class="screen" id="stats-screen">
+    <div class="stats-header">
+      <h1>📊 Общая статистика</h1>
+      <p class="subtitle">Данные всех прохождений опроса</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">Прохождений</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value" id="stat-avg">0</div>
+        <div class="stat-label">Средний балл</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value" id="stat-best">0</div>
+        <div class="stat-label">Лучший балл</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value" id="stat-today">0</div>
+        <div class="stat-label">Сегодня</div>
+      </div>
+    </div>
+
+    <div id="stats-content"></div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="btn" onclick="backToStart()">← На главную</button>
+      <button class="clear-btn" id="clear-btn" onclick="clearStats()" style="margin-left: 10px;">🗑 Очистить все данные</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!--  ПОДКЛЮЧЕНИЕ ВСЕХ JS-ФАЙЛОВ (порядок важен!)                -->
+<!-- ============================================================ -->
+<script src="js/session.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/results.js"></script>
+<script src="js/statistics.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
