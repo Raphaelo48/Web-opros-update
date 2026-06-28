@@ -68,21 +68,42 @@ const UI = {
         }
     },
 
-    // ⭐ Показать/скрыть кнопки в зависимости от роли
+    // ============================================================
+    //  ⭐ ПОКАЗАТЬ/СКРЫТЬ ЭЛЕМЕНТЫ В ЗАВИСИМОСТИ ОТ РОЛИ
+    // ============================================================
+
     updateUIForRole: function() {
         const user = Auth.getCurrentUser();
         const isAdmin = user && user.role === 'admin';
         
-        // Кнопка статистики (только для админа)
-        const statsBtn = document.getElementById('admin-only-stats');
+        console.log('👤 updateUIForRole — пользователь:', user ? user.email : 'не авторизован');
+        console.log('👑 isAdmin:', isAdmin);
+        
+        // 1. Бейдж "Опрос прошли" (контейнер)
+        const statsBadge = document.getElementById('admin-only-stats');
+        if (statsBadge) {
+            statsBadge.style.display = isAdmin ? 'block' : 'none';
+            console.log('📊 Бейдж статистики:', isAdmin ? 'ПОКАЗАН' : 'СКРЫТ');
+        } else {
+            console.warn('⚠️ Элемент #admin-only-stats не найден в HTML');
+        }
+        
+        // 2. Кнопка "Общая статистика" на главной
+        const statsBtn = document.getElementById('admin-only-stats-btn');
         if (statsBtn) {
             statsBtn.style.display = isAdmin ? 'block' : 'none';
+            console.log('🔘 Кнопка статистики (главная):', isAdmin ? 'ПОКАЗАНА' : 'СКРЫТА');
+        } else {
+            console.warn('⚠️ Элемент #admin-only-stats-btn не найден в HTML');
         }
-
-        // Бейдж с общим количеством (только для админа)
-        const badge = document.getElementById('total-passed-badge');
-        if (badge) {
-            badge.style.display = isAdmin ? 'inline' : 'none';
+        
+        // 3. Кнопка "Статистика" на экране результатов
+        const statsBtnResults = document.getElementById('admin-only-stats-btn-results');
+        if (statsBtnResults) {
+            statsBtnResults.style.display = isAdmin ? 'block' : 'none';
+            console.log('🔘 Кнопка статистики (результаты):', isAdmin ? 'ПОКАЗАНА' : 'СКРЫТА');
+        } else {
+            console.warn('⚠️ Элемент #admin-only-stats-btn-results не найден в HTML');
         }
     }
 };
