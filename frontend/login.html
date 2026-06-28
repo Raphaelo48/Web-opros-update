@@ -5,27 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — Питание и успеваемость</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/index.css">
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
-            --accent: #f59e0b;
-            --success: #10b981;
-            --danger: #ef4444;
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
             --muted: #64748b;
             --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
         }
-
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg);
@@ -39,7 +31,6 @@
                 radial-gradient(at 20% 10%, rgba(99, 102, 241, 0.12) 0, transparent 50%),
                 radial-gradient(at 80% 90%, rgba(245, 158, 11, 0.12) 0, transparent 50%);
         }
-
         .login-container {
             width: 100%;
             max-width: 440px;
@@ -49,54 +40,16 @@
             padding: 48px 40px;
             animation: fadeIn 0.4s ease;
         }
-
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .login-header .icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .login-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .login-header p {
-            color: var(--muted);
-            font-size: 14px;
-            margin-top: 6px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-
+        .login-header { text-align: center; margin-bottom: 32px; }
+        .login-header .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+        .login-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+        .login-header p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
         .form-group input {
             width: 100%;
             padding: 12px 44px 12px 16px;
@@ -104,86 +57,31 @@
             border-radius: 12px;
             font-size: 15px;
             font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s;
             background: var(--bg);
         }
-
         .form-group input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
         }
-
-        .form-group input::placeholder {
-            color: #94a3b8;
-        }
-
-        /* ============================================================
-           👁️ ГЛАЗОК (на зажатие)
-           ============================================================ */
-
+        .form-group input::placeholder { color: #94a3b8; }
         .password-toggle {
             position: absolute;
             right: 14px;
-            bottom: 13px;
+            bottom: 12px;
             background: none;
             border: none;
             font-size: 20px;
             cursor: pointer;
             color: #94a3b8;
             padding: 4px;
-            border-radius: 8px;
-            transition: color 0.2s, background 0.2s;
-            line-height: 1;
-            user-select: none;
             opacity: 0.6;
-            /* ← полупрозрачный */
+            transition: all 0.2s;
         }
-
-        .password-toggle:hover {
-            opacity: 0.9;
-            color: var(--text);
-            background: #f1f5f9;
-        }
-
-        .password-toggle:active {
-            transform: scale(0.92);
-        }
-
-        .password-toggle.active {
-            opacity: 1;
-            color: var(--primary);
-            background: #eef2ff;
-        }
-
-        /* Подсказка при наведении */
-        .password-toggle::after {
-            content: '👆 зажмите, чтобы увидеть пароль';
-            position: absolute;
-            right: 0;
-            bottom: calc(100% + 8px);
-            background: #1e293b;
-            color: #f8fafc;
-            font-size: 11px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 8px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-
-        .password-toggle:hover::after {
-            opacity: 1;
-        }
-
-        @media (max-width: 500px) {
-            .password-toggle::after {
-                display: none;
-            }
-        }
-
+        .password-toggle:hover { opacity: 1; color: var(--text); }
+        .password-toggle:active { transform: scale(0.92); }
+        .password-toggle.active { opacity: 1; color: var(--primary); }
         .btn {
             width: 100%;
             padding: 14px;
@@ -198,22 +96,8 @@
             font-family: inherit;
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .error-message {
             display: none;
             background: #fef2f2;
@@ -224,11 +108,7 @@
             margin-bottom: 16px;
             border: 1px solid #fecaca;
         }
-
-        .error-message.show {
-            display: block;
-        }
-
+        .error-message.show { display: block; }
         .success-message {
             display: none;
             background: #d1fae5;
@@ -239,136 +119,56 @@
             margin-bottom: 16px;
             border: 1px solid #6ee7b7;
         }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .toggle-mode {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        .toggle-mode a {
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .toggle-mode a:hover {
-            text-decoration: underline;
-        }
-
+        .success-message.show { display: block; }
+        .toggle-mode { text-align: center; margin-top: 18px; font-size: 14px; color: var(--muted); }
+        .toggle-mode a { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: none; }
+        .toggle-mode a:hover { text-decoration: underline; }
         .spinner {
             display: inline-block;
             width: 18px;
             height: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255,255,255,0.3);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
             vertical-align: middle;
             margin-right: 8px;
         }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 500px) {
-            .login-container {
-                padding: 32px 20px;
-            }
-            .login-header h1 {
-                font-size: 20px;
-            }
+            .login-container { padding: 32px 20px; }
         }
     </style>
 </head>
-
 <body>
-
-    <div class="login-container" id="app">
-
-        <!-- Заголовок -->
-        <div class="login-header">
-            <span class="icon">🍎</span>
-            <h1 id="form-title">Вход</h1>
-            <p id="form-subtitle">Войдите в свой аккаунт, чтобы пройти опрос</p>
+<div class="login-container">
+    <div class="login-header">
+        <span class="icon">🍎</span>
+        <h1 id="form-title">Вход</h1>
+        <p id="form-subtitle">Войдите в свой аккаунт, чтобы пройти опрос</p>
+    </div>
+    <div class="error-message" id="error-message"></div>
+    <div class="success-message" id="success-message">✅ Аккаунт создан! Теперь войдите.</div>
+    <form id="login-form">
+        <div class="form-group">
+            <label for="email">📧 Email</label>
+            <input type="email" id="email" placeholder="ivan@school.ru" required autocomplete="email">
         </div>
-
-        <!-- Ошибка -->
-        <div class="error-message" id="error-message"></div>
-
-        <!-- Успех (для регистрации) -->
-        <div class="success-message" id="success-message">✅ Аккаунт создан! Теперь войдите.</div>
-
-        <!-- Форма -->
-        <form id="login-form" autocomplete="off">
-
-            <!-- Email -->
-            <div class="form-group">
-                <label for="email">📧 Email</label>
-                <input
-                type="email"
-                id="email"
-                placeholder="ivan@school.ru"
-                required
-                autocomplete="email"
-                >
-            </div>
-
-            <!-- Пароль с глазком (на зажатие) -->
-            <div class="form-group">
-                <label for="password">🔒 Пароль</label>
-                <input
-                type="password"
-                id="password"
-                placeholder="••••••••"
-                required
-                minlength="4"
-                autocomplete="current-password"
-                >
-                <button
-                type="button"
-                class="password-toggle"
-                id="password-toggle"
-                aria-label="Зажмите, чтобы увидеть пароль"
-                title="Зажмите, чтобы увидеть пароль"
-                tabindex="-1"
-                >
-                👁️
-            </button>
+        <div class="form-group">
+            <label for="password">🔒 Пароль</label>
+            <input type="password" id="password" placeholder="••••••••" required minlength="4" autocomplete="current-password">
+            <button type="button" class="password-toggle" id="password-toggle" tabindex="-1">👁️</button>
         </div>
-
-        <!-- Кнопка -->
-        <button type="submit" class="btn" id="submit-btn">
-            Войти
-        </button>
-
-        <!-- Переключение режимов -->
+        <button type="submit" class="btn" id="submit-btn">Войти</button>
         <div class="toggle-mode">
             <span id="toggle-text">Нет аккаунта?</span>
             <a id="toggle-link">Зарегистрироваться</a>
         </div>
-
     </form>
-
 </div>
-
 <script>
-    // ============================================================
-    //  ЛОГИКА: вход / регистрация
-    // ============================================================
+    const API_URL = window.location.origin + '/api';
 
-    const API_URL = 'https://web-opros-production.up.railway.app/api';
-
-    // DOM-элементы
     const form = document.getElementById('login-form');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
@@ -382,224 +182,140 @@
     const toggleLink = document.getElementById('toggle-link');
 
     let isLoginMode = true;
+    let isPasswordVisible = false;
 
-    // ============================================================
-    //  👁️ ГЛАЗОК: ЗАЖАТЬ → ПОКАЗАТЬ, ОТПУСТИТЬ → СКРЫТЬ
-    // ============================================================
-
-    function showPassword() {
+    // Глазок на зажатие
+    passwordToggle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        isPasswordVisible = true;
         passwordInput.type = 'text';
         passwordToggle.classList.add('active');
         passwordToggle.textContent = '🙈';
-        passwordToggle.setAttribute('aria-label', 'Отпустите, чтобы скрыть пароль');
-    }
-
-    function hidePassword() {
-        passwordInput.type = 'password';
-        passwordToggle.classList.remove('active');
-        passwordToggle.textContent = '👁️';
-        passwordToggle.setAttribute('aria-label', 'Зажмите, чтобы увидеть пароль');
-    }
-
-    // === СОБЫТИЯ МЫШИ ===
-
-    // Нажал → показать пароль
-    passwordToggle.addEventListener('mousedown', function(e) {
-        e.preventDefault(); // чтобы не красть фокус у поля
-        showPassword();
     });
-
-    // Отпустил → скрыть
-    document.addEventListener('mouseup', function() {
-        // Проверяем, что глазок всё ещё активен
-        if (passwordInput.type === 'text') {
-            hidePassword();
+    document.addEventListener('mouseup', () => {
+        if (isPasswordVisible) {
+            isPasswordVisible = false;
+            passwordInput.type = 'password';
+            passwordToggle.classList.remove('active');
+            passwordToggle.textContent = '👁️';
         }
     });
-
-    // Если мышь ушла с глазка (например, случайно уехала)
-    passwordToggle.addEventListener('mouseleave', function() {
-        if (passwordInput.type === 'text') {
-            hidePassword();
+    passwordToggle.addEventListener('mouseleave', () => {
+        if (isPasswordVisible) {
+            isPasswordVisible = false;
+            passwordInput.type = 'password';
+            passwordToggle.classList.remove('active');
+            passwordToggle.textContent = '👁️';
         }
     });
-
-    // === СОБЫТИЯ КАСАНИЯ (для мобильных) ===
-
-    let touchTimer = null;
-
-    passwordToggle.addEventListener('touchstart', function(e) {
-        e.preventDefault(); // не даём браузеру показать контекстное меню
-        touchTimer = setTimeout(() => {
-            showPassword();
-        }, 100); // небольшая задержка, чтобы не срабатывало случайно
-    });
-
-    passwordToggle.addEventListener('touchend', function(e) {
+    passwordToggle.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        clearTimeout(touchTimer);
-        if (passwordInput.type === 'text') {
-            hidePassword();
+        isPasswordVisible = true;
+        passwordInput.type = 'text';
+        passwordToggle.classList.add('active');
+        passwordToggle.textContent = '🙈';
+    });
+    passwordToggle.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        if (isPasswordVisible) {
+            isPasswordVisible = false;
+            passwordInput.type = 'password';
+            passwordToggle.classList.remove('active');
+            passwordToggle.textContent = '👁️';
         }
     });
 
-    passwordToggle.addEventListener('touchcancel', function(e) {
-        clearTimeout(touchTimer);
-        if (passwordInput.type === 'text') {
-            hidePassword();
-        }
-    });
-
-    // === ЗАЩИТА: если поле теряет фокус — скрываем пароль ===
-
-    passwordInput.addEventListener('blur', function() {
-        if (passwordInput.type === 'text') {
-            hidePassword();
-        }
-    });
-
-    // ============================================================
-    //  ПЕРЕКЛЮЧЕНИЕ МЕЖДУ ВХОДОМ И РЕГИСТРАЦИЕЙ
-    // ============================================================
-
-    function toggleMode() {
+    toggleLink.addEventListener('click', () => {
         isLoginMode = !isLoginMode;
-
         if (isLoginMode) {
             formTitle.textContent = 'Вход';
             formSubtitle.textContent = 'Войдите в свой аккаунт, чтобы пройти опрос';
             submitBtn.textContent = 'Войти';
             toggleText.textContent = 'Нет аккаунта?';
             toggleLink.textContent = 'Зарегистрироваться';
-            errorEl.classList.remove('show');
-            successEl.classList.remove('show');
         } else {
             formTitle.textContent = 'Регистрация';
             formSubtitle.textContent = 'Создайте аккаунт, чтобы пройти опрос';
             submitBtn.textContent = 'Зарегистрироваться';
             toggleText.textContent = 'Уже есть аккаунт?';
             toggleLink.textContent = 'Войти';
-            errorEl.classList.remove('show');
-            successEl.classList.remove('show');
         }
-    }
+        errorEl.classList.remove('show');
+        successEl.classList.remove('show');
+    });
 
-    toggleLink.addEventListener('click', toggleMode);
-
-    // ============================================================
-    //  ОТПРАВКА ФОРМЫ
-    // ============================================================
-
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
 
         if (!email || !password) {
-            showError('Заполните все поля');
+            errorEl.textContent = 'Заполните все поля';
+            errorEl.classList.add('show');
             return;
         }
-
         if (password.length < 4) {
-            showError('Пароль должен содержать минимум 4 символа');
+            errorEl.textContent = 'Пароль должен быть минимум 4 символа';
+            errorEl.classList.add('show');
             return;
         }
 
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner"></span> Загрузка...';
-        hideError();
-        hideSuccess();
+        errorEl.classList.remove('show');
+        successEl.classList.remove('show');
 
         try {
-            let response;
-            let data;
+            const endpoint = isLoginMode ? '/auth/login' : '/auth/register';
+            const response = await fetch(`${API_URL}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка');
+            }
 
             if (isLoginMode) {
-                // === ВХОД ===
-                response = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Неверный email или пароль');
-                }
-
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-
-                showSuccess('✅ Вход выполнен! Перенаправление...');
-
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1000);
-
+                successEl.textContent = '✅ Вход выполнен! Перенаправление...';
+                successEl.classList.add('show');
+                setTimeout(() => { window.location.href = '/'; }, 1000);
             } else {
-                // === РЕГИСТРАЦИЯ ===
-                response = await fetch(`${API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Ошибка регистрации');
-                }
-
-                showSuccess('✅ Аккаунт создан! Теперь войдите.');
+                successEl.textContent = '✅ Аккаунт создан! Теперь войдите.';
+                successEl.classList.add('show');
                 setTimeout(() => {
-                    toggleMode();
+                    isLoginMode = true;
+                    formTitle.textContent = 'Вход';
+                    formSubtitle.textContent = 'Войдите в свой аккаунт, чтобы пройти опрос';
+                    submitBtn.textContent = 'Войти';
+                    toggleText.textContent = 'Нет аккаунта?';
+                    toggleLink.textContent = 'Зарегистрироваться';
                     emailInput.value = '';
                     passwordInput.value = '';
-                    // Скрываем пароль, если он видим
-                    if (passwordInput.type === 'text') {
-                        hidePassword();
+                    if (isPasswordVisible) {
+                        isPasswordVisible = false;
+                        passwordInput.type = 'password';
+                        passwordToggle.classList.remove('active');
+                        passwordToggle.textContent = '👁️';
                     }
                 }, 1500);
             }
-
         } catch (err) {
-            showError(err.message);
+            errorEl.textContent = err.message;
+            errorEl.classList.add('show');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = isLoginMode ? 'Войти' : 'Зарегистрироваться';
         }
     });
 
-    function showError(text) {
-        errorEl.textContent = text;
-        errorEl.classList.add('show');
-        successEl.classList.remove('show');
-    }
-
-    function hideError() {
-        errorEl.classList.remove('show');
-    }
-
-    function showSuccess(text) {
-        successEl.textContent = text;
-        successEl.classList.add('show');
-        errorEl.classList.remove('show');
-    }
-
-    function hideSuccess() {
-        successEl.classList.remove('show');
-    }
-
-    // ============================================================
-    //  ПРОВЕРКА: УЖЕ АВТОРИЗОВАН?
-    // ============================================================
-
     if (localStorage.getItem('token')) {
         window.location.href = '/';
     }
-
-    console.log('🔐 Страница входа загружена');
 </script>
-
 </body>
 </html>
