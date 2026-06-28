@@ -163,6 +163,10 @@ window.logout = function() {
 };
 
 window.clearStats = async function() {
+    if (!Auth.isAdmin()) {
+        alert('⛔ Доступ запрещён. Только для администратора.');
+        return;
+    }
     if (confirm('Вы уверены, что хотите удалить ВСЕ данные (включая ваши результаты)?')) {
         try {
             await Storage.clearResults();
@@ -207,6 +211,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    // ⭐ Обновить UI в зависимости от роли
+    UI.updateUIForRole();
 
     UI.updateBadge();
     console.log('🚀 Приложение запущено!');
