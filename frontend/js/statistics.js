@@ -13,7 +13,7 @@ const Statistics = {
     },
 
     // ============================================================
-    //  МОИ РЕЗУЛЬТАТЫ (доступно всем)
+    //  МОИ РЕЗУЛЬТАТЫ (история всех попыток)
     // ============================================================
 
     renderMyResults: async function() {
@@ -286,32 +286,39 @@ const Statistics = {
             }
         }));
 
-        // === СПИСОК ПРОХОЖДЕНИЙ ===
+        // === СПИСОК ИСТОРИИ ПРОХОЖДЕНИЙ ===
         const list = document.getElementById('my-recent-list');
         const reversedSorted = [...myResults].sort((a, b) => new Date(b.date) - new Date(a.date));
         list.innerHTML = reversedSorted.map((r, idx) => {
             const d = new Date(r.date);
             const dateStr = d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             const ratio = (r.total_score || 0) / 40;
-            let color, bg;
+            const isLatest = r.is_last === true;
+            
+            let color, bg, label;
             if (ratio >= 0.8) { color = '#059669'; bg = '#d1fae5'; }
             else if (ratio >= 0.6) { color = '#4f46e5'; bg = '#e0e7ff'; }
             else if (ratio >= 0.4) { color = '#d97706'; bg = '#fef3c7'; }
             else { color = '#dc2626'; bg = '#fee2e2'; }
+            
+            label = isLatest ? '🏆 Текущий' : '';
+            
             return `
                 <div class="recent-item">
                     <div class="ri-left">
                         <span class="ri-date">📅 ${dateStr}</span>
                         <span class="ri-cats">⏰${r.regime || 0} · 🍔${r.fastfood || 0} · 🧠${r.concentration || 0}</span>
                     </div>
-                    <span class="ri-score" style="color: ${color}; background: ${bg};">Попытка #${reversedSorted.length - idx} · ${r.total_score || 0}/40</span>
+                    <span class="ri-score" style="color: ${color}; background: ${bg};">
+                        Попытка #${reversedSorted.length - idx} · ${r.total_score || 0}/40 ${label}
+                    </span>
                 </div>
             `;
         }).join('');
     },
 
     // ============================================================
-    //  ОБЩАЯ СТАТИСТИКА (ТОЛЬКО ДЛЯ АДМИНА)
+    //  ОБЩАЯ СТАТИСТИКА (ТОЛЬКО ДЛЯ АДМИНА — только последние результаты)
     // ============================================================
 
     renderStats: async function() {
@@ -323,7 +330,7 @@ const Statistics = {
 
         this.destroyCharts();
 
-        const results = await Storage.getResults();
+        const results = await Storage.getResults(); // Здесь уже только is_last = true
         const stats = await Storage.getStats();
         const catAvg = await Storage.getCategoryAverages();
         const verdicts = await Storage.getVerdictCounts();
@@ -367,7 +374,7 @@ const Statistics = {
             </div>
 
             <div class="chart-container">
-                <div class="chart-title">🏅 Все прохождения</div>
+                <div class="chart-title">🏅 Все прохождения (последние результаты)</div>
                 <div class="recent-list" id="recent-list"></div>
             </div>
         `;
@@ -466,7 +473,7 @@ const Statistics = {
             }
         }));
 
-        // === СПИСОК ВСЕХ ПРОХОЖДЕНИЙ ===
+        // === СПИСОК ВСЕХ ПРОХОЖДЕНИЙ (только последние) ===
         const list = document.getElementById('recent-list');
         const sorted = [...results].sort((a, b) => new Date(b.date) - new Date(a.date));
         const currentUser = Session.getUser();
@@ -475,7 +482,7 @@ const Statistics = {
             const d = new Date(r.date);
             const dateStr = d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }) + ', ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             const ratio = (r.total_score || 0) / 40;
-            
+
             let color, bg;
             if (ratio >= 0.8) { color = '#059669'; bg = '#d1fae5'; }
             else if (ratio >= 0.6) { color = '#4f46e5'; bg = '#e0e7ff'; }
@@ -493,21 +500,4 @@ const Statistics = {
                         <span class="ri-date">📅 ${dateStr}${userBadge}</span>
                         <span class="ri-cats">⏰${r.regime || 0} · 🍔${r.fastfood || 0} · 🧠${r.concentration || 0}</span>
                     </div>
-                    <span class="ri-score" style="color: ${color}; background: ${bg};">${r.total_score || 0}/40</span>
-                </div>
-            `;
-        }).join('');
-    }
-};
-
-window.Statistics = Statistics;
-
-window.showMyResults = async function() {
-    UI.showScreen('myresults-screen');
-    await Statistics.renderMyResults();
-};
-
-window.showStats = async function() {
-    UI.showScreen('stats-screen');
-    await Statistics.renderStats();
-};
+                    <
