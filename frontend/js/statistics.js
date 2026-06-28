@@ -12,6 +12,10 @@ const Statistics = {
         chartInstances = [];
     },
 
+    // ============================================================
+    //  МОИ РЕЗУЛЬТАТЫ
+    // ============================================================
+
     renderMyResults: async function() {
         this.destroyCharts();
 
@@ -302,6 +306,10 @@ const Statistics = {
         }).join('');
     },
 
+    // ============================================================
+    //  ОБЩАЯ СТАТИСТИКА
+    // ============================================================
+
     renderStats: async function() {
         this.destroyCharts();
 
@@ -445,22 +453,37 @@ const Statistics = {
             }
         }));
 
+        // ============================================================
+        //  ⭐ СПИСОК ВСЕХ ПРОХОЖДЕНИЙ С ПРАВИЛЬНЫМ БЕЙДЖЕМ
+        // ============================================================
+
         const list = document.getElementById('recent-list');
         const sorted = [...results].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const currentUser = Session.getUser(); // Получаем текущего пользователя
+
         list.innerHTML = sorted.map(r => {
             const d = new Date(r.date);
             const dateStr = d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }) + ', ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             const ratio = (r.total_score || 0) / 40;
+            
             let color, bg;
             if (ratio >= 0.8) { color = '#059669'; bg = '#d1fae5'; }
             else if (ratio >= 0.6) { color = '#4f46e5'; bg = '#e0e7ff'; }
             else if (ratio >= 0.4) { color = '#d97706'; bg = '#fef3c7'; }
             else { color = '#dc2626'; bg = '#fee2e2'; }
-            const mineBadge = r.is_mine ? '<span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;">ВЫ</span>' : '';
+
+            // ⭐ Определяем, текущий ли это пользователь (по user_id)
+            const isCurrentUser = currentUser && r.user_id === currentUser.id;
+            
+            // ⭐ Бейдж: "ВЫ" — для текущего пользователя, "Пользователь" — для остальных
+            const userBadge = isCurrentUser
+                ? '<span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;">ВЫ</span>'
+                : '<span style="background:#e2e8f0;color:#64748b;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;">Пользователь</span>';
+
             return `
                 <div class="recent-item">
                     <div class="ri-left">
-                        <span class="ri-date">📅 ${dateStr}${mineBadge}</span>
+                        <span class="ri-date">📅 ${dateStr}${userBadge}</span>
                         <span class="ri-cats">⏰${r.regime || 0} · 🍔${r.fastfood || 0} · 🧠${r.concentration || 0}</span>
                     </div>
                     <span class="ri-score" style="color: ${color}; background: ${bg};">${r.total_score || 0}/40</span>
